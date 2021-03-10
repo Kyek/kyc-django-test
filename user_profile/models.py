@@ -1,4 +1,5 @@
 from enum import Enum
+from datetime import date, datetime
 import uuid
 
 from django.contrib.auth.models import User
@@ -15,7 +16,7 @@ class Gender(Enum):
 
     @classmethod
     def choices(cls):
-        return tuple((i.name, i.value) for i in cls)
+        return tuple((i.value, i.name) for i in cls)
 
 
 class Profile(models.Model):
@@ -23,7 +24,7 @@ class Profile(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     first_name = models.CharField(max_length=128, blank=True)
     last_name = models.CharField(max_length=128, blank=True)
-    birthdate = models.DateField(blank=True)
+    birthdate = models.DateField(default=datetime.now)
     gender = models.CharField(max_length=1, choices=Gender.choices(), default=Gender.FEMALE.value)
     phone_number = models.CharField(max_length=10, blank=True)
     address = models.CharField(max_length=128, blank=True)
@@ -31,8 +32,8 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
 
-@receiver(post_save, User)
+@receiver(post_save, sender=User)
 def create_or_update_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.create(owner=instance)
     instance.profile.save
