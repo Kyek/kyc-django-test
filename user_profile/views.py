@@ -1,22 +1,22 @@
-from rest_framework import exceptions, mixins, serializers, views, viewsets
-from rest_framework import permissions
-from rest_framework.generics import UpdateAPIView
+from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
-from drf_yasg.utils import swagger_auto_schema
 
-from .models import User, Profile
+from .models import Profile, User
 from .permissions import OwnProfilePermission
 from .serializers import UserSerializer, serializer_factory
 
 
 class UserCreateViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
                         mixins.RetrieveModelMixin):
+    """
+    Viewset for creating and retrieving an user icluding profile
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def check_permissions(self, request):
+        # the permissions are only needed when tretieving not when creating
         if not self.request.method == "POST":
             return super().check_permissions(request)
 
@@ -25,6 +25,9 @@ class UserCreateViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
 
 
 class ProfileUpdateViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
+    """
+    Viewset for updating only profile of a user; only owner can update profile
+    """
     queryset = Profile.objects.all()
     serializer_class = None
     permission_classes = [IsAuthenticated, OwnProfilePermission]
@@ -36,12 +39,15 @@ class ProfileUpdateViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
     def get_serializer(self, *args, **kwargs):
         instance = args[0]
         read_only_profile_fields = []
+        # I will create a serializer class for all the fields on the profile
+        # Only the fields set to null will be updateable
         for field in self.fields_to_validate:
             current_value = getattr(instance, field)
             if current_value is not None:
                 read_only_profile_fields.append(field)
 
-        serializer_class = serializer_factory(Profile, self.fields_to_validate, read_only_profile_fields, None)
+        serializer_class = serializer_factory(Profile, self.fields_to_validate,
+                                              read_only_profile_fields, None)
 
         self.serializer_class = serializer_class
 

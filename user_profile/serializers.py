@@ -27,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
                     username=validated_data['username'])
         user.set_password(validated_data['password'])
         user.save()
+        # Updating nested data
         user.profile.first_name = validated_data["profile"]["first_name"]
         user.profile.last_name = validated_data["profile"]["last_name"]
         user.profile.birthdate = validated_data["profile"]["birthdate"]

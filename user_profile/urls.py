@@ -1,7 +1,6 @@
-from django.views.generic import base
 from rest_framework import routers
 
-from .views import UserCreateViewSet, ProfileUpdateViewSet
+from .views import ProfileUpdateViewSet, UserCreateViewSet
 
 app_name = "user_profile"
 
