@@ -42,6 +42,10 @@ Now I think you have everything to make this work, you only need to run the foll
 pipenv run python manage.py runserver
 ```
 This will start a server at port 8000.
+You also need a super user whic you can create using:
+```bash
+pipenv run python manage.py createsuperuser
+```
 # 3. Usage
 The admin it's only needed for invalidating profile data so, if you want to start feeding the db you can go to the [documentation](http://localhost:8000/redoc) and start playing with it.  
 To use the patch method its important to be logged in you; can get the proper token for the user in the django admin.
