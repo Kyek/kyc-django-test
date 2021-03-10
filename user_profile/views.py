@@ -1,9 +1,10 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Profile, User
 from .permissions import OwnProfilePermission
-from .serializers import UserSerializer, serializer_factory
+from .serializers import ProfileSerializer, UserSerializer, serializer_factory
 
 
 class UserCreateViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin,
@@ -29,12 +30,17 @@ class ProfileUpdateViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
     Viewset for updating only profile of a user; only owner can update profile
     """
     queryset = Profile.objects.all()
-    serializer_class = None
+    serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated, OwnProfilePermission]
     fields_to_validate = [
         "first_name", "last_name", "birthdate", "gender", "phone_number",
         "address"
     ]
+    http_method_names = ["patch"]
+
+    @swagger_auto_schema(request_body=ProfileSerializer)
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
 
     def get_serializer(self, *args, **kwargs):
         instance = args[0]
