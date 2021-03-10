@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = {extras = ["argon2"], version = "*"}
+djangorestframework = "*"
+drf-yasg = "*"
+django-cors-headers = "*"
+django-environ = "*"
+
+[dev-packages]
+pylint = "*"
+pylint-django = "*"
+yapf = "*"
+isort = "*"
+rope = "*"
+
+[requires]
+python_version = "3.9"
